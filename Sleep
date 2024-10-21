@@ -1,0 +1,104 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load the data
+df = pd.read_csv(r'C:\Users\MMC\Documents\sleep data.csv')
+
+# Strip leading and trailing spaces from column names
+df.columns = df.columns.str.strip()
+
+def analyze_sleep_cycle(person_id):
+    try:
+        # Get individual data
+        person = df[df['ID'] == person_id].iloc[0]
+
+        print(f"\n----- Sleep Analysis for Person ID: {person_id} -----")
+        
+        # Print user details
+        print(f"Age: {person['Age']}")
+        print(f"Gender: {person['Gender']}")
+        print(f"Sleep Duration: {person['Sleep duration']} hours")
+        print(f"Sleep Efficiency: {person['Sleep efficiency']:.2%}")
+        print(f"Awakenings: {person['Awakenings']}")
+        print(f"Caffeine Consumption: {person['Caffeine consumption']} cups")
+        print(f"Alcohol Consumption: {person['Alcohol consumption']} drinks")
+        print(f"Exercise Frequency: {person['Exercise frequency']} times/week")
+        
+        # Sleep stages for the individual
+        sleep_stages_individual = {
+            'REM sleep': person['REM sleep percentage'],
+            'Deep sleep': person['Deep sleep percentage'],
+            'Light sleep': person['Light sleep percentage']
+        }
+
+        # Overall averages
+        avg_sleep_stages = {
+            'REM sleep': df['REM sleep percentage'].mean(),
+            'Deep sleep': df['Deep sleep percentage'].mean(),
+            'Light sleep': df['Light sleep percentage'].mean()
+        }
+
+        # Pie chart for individual vs overall averages
+        plt.figure(figsize=(12, 6))
+
+        # Individual sleep stages
+        plt.subplot(1, 2, 1)
+        plt.pie(sleep_stages_individual.values(), labels=sleep_stages_individual.keys(), autopct='%1.1f%%', startangle=90, colors=['#ff9999', '#66b3ff', '#99ff99'])
+        plt.title(f"Sleep Stages Distribution for Person {person_id}")
+
+        # Average sleep stages
+        plt.subplot(1, 2, 2)
+        plt.pie(avg_sleep_stages.values(), labels=avg_sleep_stages.keys(), autopct='%1.1f%%', startangle=90, colors=['#ffcc99', '#c2c2f0', '#ffb3e6'])
+        plt.title("Average Sleep Stages Distribution")
+
+        plt.axis('equal')  # Equal aspect ratio ensures that pie chart is circular.
+        plt.show()
+
+        # Calculate averages by gender
+        gender_group = df.groupby('Gender').agg({
+            'Sleep duration': ['mean', 'std'],
+            'Sleep efficiency': ['mean', 'std'],
+            'REM sleep percentage': ['mean', 'std'],
+            'Deep sleep percentage': ['mean', 'std'],
+            'Light sleep percentage': ['mean', 'std'],
+        }).reset_index()
+
+        # Plot pie chart for sleep metrics by gender
+        for _, row in gender_group.iterrows():
+            metrics = {
+                'Mean Sleep Duration': row[('Sleep duration', 'mean')],
+                'Mean Sleep Efficiency': row[('Sleep efficiency', 'mean')] * 100,  # Convert to percentage
+                'Mean REM Sleep': row[('REM sleep percentage', 'mean')],
+                'Mean Deep Sleep': row[('Deep sleep percentage', 'mean')],
+                'Mean Light Sleep': row[('Light sleep percentage', 'mean')],
+            }
+            plt.figure(figsize=(8, 8))
+            plt.pie(metrics.values(), labels=metrics.keys(), autopct='%1.1f%%', startangle=90)
+            plt.title(f"Sleep Metrics for Gender: {row['Gender']}")
+            plt.axis('equal')
+            plt.show()
+
+        # Recommendations based on individual metrics
+        if person['Sleep efficiency'] < 0.7:
+            print("Recommendation: Try to improve your sleep efficiency by maintaining a consistent sleep schedule.")
+        if person['Caffeine consumption'] > 2:
+            print("Recommendation: Consider reducing caffeine intake, especially before bedtime.")
+        if person['Alcohol consumption'] > 1:
+            print("Recommendation: Limit alcohol consumption for better sleep quality.")
+        if person['Exercise frequency'] < 3:
+            print("Recommendation: Regular exercise may help improve your sleep quality.")
+
+    except IndexError:
+        print(f"No data found for Person ID: {person_id}. Please check the ID and try again.")
+
+# Ask for the person ID to analyze with improved prompt
+while True:
+    try:
+        person_id_input = int(input("Enter the Person ID to analyze (or -1 to exit): "))
+        if person_id_input == -1:
+            print("Exiting the analysis. Have a good day!")
+            break
+        analyze_sleep_cycle(person_id_input)
+    except ValueError:
+        print("Invalid input. Please enter a valid Person ID.")
