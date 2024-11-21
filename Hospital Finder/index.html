@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Hospital Finder</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="header">
+        <h1>Smart Hospital Finder</h1>
+        <div id="status" class="status">Detecting your location...</div>
+    </div>
+
+    <div class="control-panel">
+        <button id="toggleNightMode" class="control-btn">
+            <i class="fas fa-moon"></i> Night Mode
+        </button>
+        <div class="filters">
+            <select id="specialtyFilter" class="filter-select">
+                <option value="">All Specialties</option>
+                <option value="emergency">Emergency</option>
+                <option value="icu">ICU</option>
+                <option value="cardiology">Cardiology</option>
+                <option value="pediatrics">Pediatrics</option>
+            </select>
+            <select id="facilityFilter" class="filter-select">
+                <option value="">All Facilities</option>
+                <option value="bloodbank">Blood Bank</option>
+                <option value="wheelchair">Wheelchair Access</option>
+                <option value="parking">Parking</option>
+            </select>
+            <button id="sortDistance" class="control-btn">
+                <i class="fas fa-sort"></i> Sort by Distance
+            </button>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="info-panel" class="info-panel">
+        <h3>Hospital Information</h3>
+        <div id="hospital-stats"></div>
+        <div id="favorites-list"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
